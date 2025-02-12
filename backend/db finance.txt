@@ -1,0 +1,3 @@
+Commands Prisma
+Migrate to db
+-npx prisma migrate dev
