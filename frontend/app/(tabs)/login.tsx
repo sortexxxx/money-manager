@@ -5,31 +5,37 @@ import { View, Text, TextInput, StyleSheet, Pressable, Alert } from "react-nativ
 import { useRouter } from "expo-router"
 import { useAuth } from "../../hooks/useAuth"
 import { apiRequest } from "../../utils/api"
+import axios from "axios"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { login } = useAuth()
   const router = useRouter()
-
   const handleLogin = async () => {
-    try {
-      const response = await apiRequest("/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      })
-
-      if (response.token) {
-        login(response.token)
-        router.replace("/")
-      } else {
-        Alert.alert("Login Failed", "Invalid email or password")
+      try {
+        const userData = { email, password };
+        const response = await axios.post(
+          "http://192.168.29.184:3000/auth/login",
+          userData
+        );
+        if (response.data) {
+          Alert.alert("Logged In Successfully");
+          await AsyncStorage.setItem("token", response.data.token);
+          await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
+          setIsLoggedIn(true);
+          router.replace("/mainpage", )
+        } else {
+          Alert.alert("Incorrect email or password!");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        Alert.alert("Login Failed", "An error occurred during login");
       }
-    } catch (error) {
-      console.error("Login error:", error)
-      Alert.alert("Login Failed", "An error occurred during login")
-    }
-  }
+    };
+
 
   return (
     <View style={styles.container}>

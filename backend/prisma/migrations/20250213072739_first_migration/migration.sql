@@ -25,7 +25,6 @@ CREATE TABLE `Transaction` (
     `type` ENUM('EARN', 'SPEND') NOT NULL,
     `categoryId` INTEGER NOT NULL,
     `userId` INTEGER NOT NULL,
-    `categoryName` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)

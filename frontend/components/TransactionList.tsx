@@ -1,53 +1,39 @@
-"use client"
+import { View, Text, StyleSheet, FlatList } from "react-native"
 
-import { useState, useEffect } from "react"
-import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native"
-
-interface Transaction {
-  id: string
-  amount: number
-  type: "income" | "expense"
+export interface Transaction {
+  id: number;
+  amount: number;
+  type: "EARN" | "SPEND";
+  categoryId: number;
   category: {
-    id: string
-    name: string
-  }
-  description: string
-  date: string
+    id: number;
+    name: string;
+  };
+  userId: number;
+  user: {
+    id: number;
+    name: string;
+  };
+  createdAt: string;
+  // description: string;
 }
 
-export default function TransactionList() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [refreshing, setRefreshing] = useState(false)
+export type Transactions = Transaction[]
 
-  const fetchTransactions = async () => {
-    try {
-      const response = await fetch("/api/transactions")
-      const data = await response.json()
-      setTransactions(data)
-    } catch (error) {
-      console.error("Error fetching transactions:", error)
-    }
-  }
+interface TransactionListProps {
+  transactions: Transactions;
+}
 
-  const onRefresh = async () => {
-    setRefreshing(true)
-    await fetchTransactions()
-    setRefreshing(false)
-  }
-
-  useEffect(() => {
-    fetchTransactions()
-  }, []) //This was the line that needed fixing.  The empty array [] means it only runs once on mount.  Adding fetchTransactions as a dependency means it will rerun whenever fetchTransactions changes.  However, fetchTransactions doesn't change, so this is likely not the intended behavior.  A better solution would be to add a dependency that changes when new transactions are needed, such as a variable indicating whether to refresh.
-
+export default function TransactionList({ transactions }: TransactionListProps) {
   const renderItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
       <View>
         <Text style={styles.category}>{item.category.name}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
+        {/* <Text style={styles.description}>{item.description}</Text> */}
+        <Text style={styles.date}>{new Date(item.createdAt).toLocaleDateString()}</Text>
       </View>
-      <Text style={[styles.amount, item.type === "income" ? styles.income : styles.expense]}>
-        {item.type === "income" ? "+" : "-"}${item.amount}
+      <Text style={[styles.amount, item.type === "EARN" ? styles.income : styles.expense]}>
+        {item.type === "EARN" ? "+" : "-"}₹{item.amount}
       </Text>
     </View>
   )
@@ -58,9 +44,8 @@ export default function TransactionList() {
       <FlatList
         data={transactions}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        // keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </View>
   )
@@ -79,6 +64,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   list: {
+    flex: 1,
     gap: 12,
   },
   transactionItem: {

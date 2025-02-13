@@ -34,7 +34,6 @@ model Transaction {
   categoryId   Int
   category     Category        @relation(fields: [categoryId], references: [id])
   userId       Int
-  categoryName String           @relation(fields: [categoryName], references: [name])
   user         User            @relation(fields: [userId], references: [id])
   createdAt    DateTime        @default(now())
 }

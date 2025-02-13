@@ -1,11 +1,43 @@
+import { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native"
+export interface Transaction {
+  id: number;
+  amount: number;
+  type: "EARN" | "SPEND";
+  categoryId: number;
+  category: {
+    id: number;
+    name: string;
+    
+  };
+  userId: number;
+  user: {
+    id: number;
+    name: string;
+  };
+  createdAt: string;
+}
 
-export default function ExpenseSummary() {
+export type Transactions = Transaction[]
+
+interface ExpenseSummaryProps {
+  transactions: Transactions;
+}
+
+export default function ExpenseSummary({ transactions }: ExpenseSummaryProps) {
   // Sample data - replace with your actual data from backend
+  const income = transactions
+    .filter(transaction => transaction.type === 'EARN')
+    .reduce((total, transaction) => total + transaction.amount, 0);
+  const expenses = transactions
+    .filter(transaction => transaction.type === 'SPEND')
+    .reduce((total, transaction) => total + transaction.amount, 0);
+  const balance = income - expenses;
+  
   const summary = {
-    income: 5000,
-    expenses: 2500,
-    balance: 2500,
+    income: income,
+    expenses: expenses,
+    balance: balance,
   }
 
   return (
@@ -32,7 +64,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
     gap: 12,
   },
   card: {

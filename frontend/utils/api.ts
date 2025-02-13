@@ -1,11 +1,14 @@
-const BASE_URL = "/api"
+const BASE_URL = "http://localhost:3000"
 
 interface ApiOptions extends RequestInit {
   token?: string | null
 }
 
 export async function apiRequest(endpoint: string, options: ApiOptions = {}) {
+    console.log("endpoint", endpoint)
+    console.log("options", options)
   const { token, ...restOptions } = options
+  console.log("token", token)
 
   const headers = {
     "Content-Type": "application/json",
@@ -26,7 +29,7 @@ export async function apiRequest(endpoint: string, options: ApiOptions = {}) {
     if (!response.ok) {
       throw new Error("API request failed")
     }
-
+    console.log("response", response)
     return await response.json()
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
@@ -38,13 +41,13 @@ export async function apiRequest(endpoint: string, options: ApiOptions = {}) {
   }
 }
 
-export async function login(email: string, password: string) {
-    var email = "shurti@example.com";
-    var password = "password1234";
-  const response = await apiRequest("/login", {
-    method: "POST",
-    body: JSON.stringify({ email, password }),
-  })
+// export async function login(email: string, password: string) {
+//     var email = "shurti@example.com";
+//     var password = "password1234";
+//   const response = await apiRequest("/login", {
+//     method: "POST",
+//     body: JSON.stringify({ email, password }),
+//   })
 
-  return response?.token
-}
+//   return response?.token
+// }
